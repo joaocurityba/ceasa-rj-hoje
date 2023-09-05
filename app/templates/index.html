@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    
+    <title>Produtos</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main {
+            max-width: 600px;
+            margin: 60px auto;
+            background-image: url('../static/bg.jpg');
+            background-size: contain;
+            background-position: top center;
+            background-repeat: no-repeat;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+
+            animation: entering2 0.6s ease-in-out;
+        }
+
+        @keyframes entering2 {
+            from {
+                opacity: 0;
+                transform: translateX(-200px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            margin-top: 200px;
+            color: black;
+            text-align: center;
+        }
+
+        h4 {
+            color: #333;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #search-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+        }
+
+        #search-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #search-button:hover {
+            background-color: #45a049;
+        }
+
+        #search-results {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        #search-results li {
+            background-color: white;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        #search-results li:hover {
+            background-color: #45a049;
+            color: white;
+        }
+
+        #voltar-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #voltar-btn:hover {
+            background-color: #45a049;
+        }
+        
+        #voltar-btn a {
+            text-decoration: none;
+            color: white;
+        }
+
+        footer p {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Estilos para telas menores ou iguais a 600px de largura */
+        @media (max-width: 520px) {
+            body {
+                background-color: white;
+            }
+            
+            .main {
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 10px;
+                box-shadow: 0 0 0 rgba(0, 0, 0, 0.0);
+
+                animation: entering 0.6s ease-in-out;
+            }
+
+            @keyframes entering {
+                from {
+                    opacity: 0;
+                    transform: translateY(-200px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            h1 {
+                margin-top: 140px;
+                font-size: 24px;
+            }
+
+            h4 {
+                font-size: 16px;
+            }
+
+            #search-form {
+                flex-direction: column;
+            }
+
+            #search-input {
+                width: 90%;
+            }
+
+            select, button, #search-button, #voltar-btn {
+                width: 95%;
+            }
+
+    }                
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h1>Cotação de Produtos<br>CEASA-RJ</h1><br>
+        
+        <form action="/filtro" method="post" id="form">
+            <label for="produto">Selecione um produto e descubra seu preço:</label><br>
+            <select name="produto" id="produto">
+                {% for produto in produtos %}
+                    <option value="{{ produto.id }}">{{ produto.nome }} {{ produto.tipo }}</option>
+                {% endfor %}
+            </select><br>
+            <button type="submit">Exibir Detalhes</button>
+        </form><br>
+
+        <h4>Ou pesquise o produto pelo nome:</h4>
+
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="Digite o nome do produto">
+            <button type="button" id="search-button">Buscar</button>
+            <button id="voltar-btn"><a href="/">Limpar</a></button>
+        </form>
+        
+        <ul id="search-results">
+            <!-- Os resultados da busca serão mostrados aqui -->
+        </ul>
+
+    </div>
+
+    <footer>
+        <p>Desenvolvido pela Peanuts Software Corp.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function performSearch(query) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/search',
+                    data: { query: encodeURIComponent(query) },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function(response) {
+                        $('#search-results').empty();
+                        response.forEach(function(result) {
+                            $('#search-results').append('<li data-produto-id="' + result.id + '">' + result.nome + " " + result.tipo + '</li>');
+                        });
+                    }
+                });
+            }
+
+            $('#search-button').on('click', function() {
+                var query = $('#search-input').val();
+                performSearch(query);
+            });
+
+            $('#search-input').on('input', function() {
+                var query = $(this).val();
+                performSearch(query);
+            });
+
+            $('#search-results').on('click', 'li', function() {
+            var produtoId = $(this).data('produto-id');
+            window.location.href = '/produto/' + produtoId;
+            
+        });
+    });
+</script>
+</body>
+</html>
