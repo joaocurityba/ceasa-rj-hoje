@@ -5,6 +5,10 @@ import pdfplumber
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['JSON_AS_ASCII'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.secret_key = os.environ.get('SECRET_KEY', 'secret')
+app.debug = os.environ.get('DEBUG', False)
+app.config['FLASK_ENV'] = os.environ.get('FLASK_ENV', 'production')
+
 db = SQLAlchemy(app)
 
 
