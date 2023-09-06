@@ -74,7 +74,7 @@ def search():
 
 if __name__ == '__main__':
     with app.app_context():
-        pdf_path = './precos3.pdf'
+        pdf_path = './precos4.pdf'
         selected_columns = ['PRODUTOS', 'TIPO', 'UNIDADE EMBALAGEM', 'MODAL']
         table_data = extract_selected_columns(pdf_path, selected_columns)
         db.create_all()
